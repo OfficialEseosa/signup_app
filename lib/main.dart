@@ -83,10 +83,13 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'Email is required';
                   }
-                  if (!value.contains('@')) {
-                    return 'Please enter a valid email';
+                  final emailRegex = RegExp(
+                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                  );
+                  if (!emailRegex.hasMatch(value)) {
+                    return 'Enter a valid email address (e.g., name@example.com)';
                   }
                   return null;
                 },
