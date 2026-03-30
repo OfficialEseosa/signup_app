@@ -15,6 +15,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmationController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmation = true;
+  DateTime? _selectedDate;
 
   @override
   void dispose() {
@@ -22,7 +27,24 @@ class _SignupScreenState extends State<SignupScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmationController.dispose();
+    _dateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text =
+            '${picked.month}/${picked.day}/${picked.year}';
+      });
+    }
   }
 
   @override
@@ -85,14 +107,44 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 16),
 
+                // Date of Birth Field
+                TextFormField(
+                  controller: _dateController,
+                  readOnly: true,
+                  onTap: _pickDate,
+                  decoration: const InputDecoration(
+                    labelText: 'Date of Birth',
+                    prefixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(),
+                    hintText: 'MM/DD/YYYY',
+                  ),
+                  validator: (_) {
+                    if (_selectedDate == null) {
+                      return 'Please select your date of birth';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
                 // Password Field
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -109,11 +161,24 @@ class _SignupScreenState extends State<SignupScreen> {
                 // Confirm Password Field
                 TextFormField(
                   controller: _confirmationController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: _obscureConfirmation,
+                  decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmation
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(
+                          () =>
+                              _obscureConfirmation = !_obscureConfirmation,
+                        );
+                      },
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -128,28 +193,28 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 24),
 
                 // Sign Up Button
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SuccessScreen(fullName: _nameController.text),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 12,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SuccessScreen(fullName: _nameController.text),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                  ),
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: 18),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
                 ),
               ],

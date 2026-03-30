@@ -1,94 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'signup_screen.dart';
 
-class WelcomeScreen extends StatefulWidget {
-  final String fullName;
-
-  const WelcomeScreen({super.key, required this.fullName});
-
-  @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen> {
-  String _selectedAvatar = '😊';
-  final List<String> _avatarOptions = ['😊', '🚀', '🎉', '💜', '🌟', '🎨', '✨', '🔥'];
-
-  void _showAvatarPicker() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Pick Your Avatar'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: GridView.count(
-              crossAxisCount: 4,
-              shrinkWrap: true,
-              children: _avatarOptions.map((emoji) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedAvatar = emoji;
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: _selectedAvatar == emoji
-                          ? Border.all(color: Colors.purple, width: 2)
-                          : null,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        emoji,
-                        style: const TextStyle(fontSize: 32),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        );
-      },
-    );
-  }
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Cash Money"),
-        actions: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: GestureDetector(
-                onTap: _showAvatarPicker,
-                child: Text(
-                  _selectedAvatar,
-                  style: const TextStyle(fontSize: 32),
+      backgroundColor: Colors.purple[50],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('💜', style: TextStyle(fontSize: 72)),
+              const SizedBox(height: 24),
+
+              // Animated title
+              AnimatedTextKit(
+                animatedTexts: [
+                  TypewriterAnimatedText(
+                    'Welcome!',
+                    textStyle: const TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                    speed: const Duration(milliseconds: 100),
+                  ),
+                ],
+                totalRepeatCount: 1,
+              ),
+              const SizedBox(height: 12),
+
+              // Animated subtitle
+              AnimatedTextKit(
+                animatedTexts: [
+                  FadeAnimatedText(
+                    'Join us and get the cash money.',
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
+                    ),
+                    duration: const Duration(milliseconds: 2500),
+                  ),
+                ],
+                totalRepeatCount: 1,
+              ),
+              const SizedBox(height: 48),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignupScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _selectedAvatar,
-              style: const TextStyle(fontSize: 64),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Welcome ${widget.fullName}',
-              style: const TextStyle(fontSize: 32),
-            ),
-          ],
         ),
       ),
     );
