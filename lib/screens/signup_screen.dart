@@ -41,8 +41,9 @@ class _SignupScreenState extends State<SignupScreen> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _dateController.text =
-            '${picked.month}/${picked.day}/${picked.year}';
+        final mm = picked.month.toString().padLeft(2, '0');
+        final dd = picked.day.toString().padLeft(2, '0');
+        _dateController.text = '$mm/$dd/${picked.year}';
       });
     }
   }
